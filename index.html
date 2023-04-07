@@ -1,86 +1,16 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
+<html>
+  <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="./simple.css">
-<script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
-    <title>Ausweis-Upload</title>
-
-    <style>
-
-        pre {
-            display: inline-block;
-            width: 100%;
-        }
-
-        #document-image {
-            max-width: 100%;
-            height: auto;
-        }
-
-        #document-image-container {
-            max-width: 500px; /* Maximalbreite des Containers */
-            max-height: 500px; /* Maximalhöhe des Containers */
-            text-align: center;
-        }     
-
-        
-    </style>
-</head>
-<body>
-    <h1>Ausweis-Upload</h1>
-    <div>
-        <pre>
-            <input type="file" id="file-input">
-
-    <div id="document-image-container">
-
-        <img id="document-image">
-    </div>
-</pre>
-    </div>
-
-
-    <script>
-const fileInput = document.getElementById("file-input");
-const documentImage = document.getElementById("document-image");
-
-fileInput.addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-
-  reader.onload = (e) => {
-    const fileContent = e.target.result;
-    documentImage.src = fileContent;
-  };
-
-  reader.readAsDataURL(file);
-});
-
-    </script>
-
-
-
-<!-- <script>
-    const fileInput = document.getElementById("file-input");
-    const documentContent = document.getElementById("document-content");
-
-        fileInput.addEventListener("change", (event) => {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-                const fileContent = e.target.result;
-                documentContent.innerHTML = fileContent;
-            };
-
-            reader.readAsText(file);
-    });
-</script> -->
-
-
-</body>
+    <title>Bildmaskierung</title>
+  </head>
+  <body>
+    <input type="file" id="image-upload">
+    <br><br>
+    <button id="masking-mode">Maskierungsmodus</button>
+    <button id="mask-image">Bild maskieren</button>
+    <br><br>
+    <canvas id="canvas"></canvas>
+    <script src="script.js"></script>
+  </body>
 </html>
