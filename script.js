@@ -1,91 +1,89 @@
-// Canvas-Element und Kontext holen
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
+// Variablen deklarieren
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+let img = new Image();
+let isDrawing = false;
+let startX, startY;
+let maskMode = false;
+let rects = [];
+let tempRect = null;
 
-// Bild-Upload-Element holen
-const imageUpload = document.getElementById('image-upload');
-
-// Flag für Maskierungsmodus
-let maskingMode = false;
-
-// Array für markierte Bereiche
-let maskRegions = [];
-
-// Event-Listener für Bild-Upload
-imageUpload.addEventListener('change', handleImageUpload);
-
-// Event-Listener für Maskierungsmodus-Button
-const maskingModeButton = document.getElementById('masking-mode');
-maskingModeButton.addEventListener('click', toggleMaskingMode);
-
-// Event-Listener für Bild-Maskieren-Button
-const maskImageButton = document.getElementById('mask-image');
-maskImageButton.addEventListener('click', maskImage);
-
-// Bild-Upload-Handler
-function handleImageUpload(event) {
-  // Bild in Canvas zeichnen
-  const image = new Image();
-  image.src = URL.createObjectURL(event.target.files[0]);
-  image.onload = function() {
-    canvas.width = image.width;
-    canvas.height = image.height;
-    context.drawImage(image, 0, 0);
+// Bild hochladen
+function handleImageUpload() {
+    let fileInput = document.getElementById("image-upload");
+    img.onload = function () {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
   };
+  img.src = URL.createObjectURL(fileInput.files[0]);
 }
+
+// Mausereignisse behandeln
+canvas.addEventListener("mousedown", function (e) {
+  if (maskMode) {
+    isDrawing = true;
+    startX = e.offsetX;
+    startY = e.offsetY;
+    tempRect = {
+      x: startX,
+      y: startY,
+      width: 0,
+      height: 0
+    };
+  }
+});
+
+canvas.addEventListener("mousemove", function (e) {
+  if (maskMode && isDrawing) {
+    tempRect.width = e.offsetX - startX;
+    tempRect.height = e.offsetY - startY;
+    drawTempRect(tempRect);
+  }
+});
+
+canvas.addEventListener("mouseup", function (e) {
+  if (maskMode && isDrawing) {
+    isDrawing = false;
+    rects.push(tempRect);
+    drawRects();
+  }
+});
 
 // Maskierungsmodus umschalten
-function toggleMaskingMode() {
-  maskingMode = !maskingMode;
-  if (maskingMode) {
-    maskingModeButton.innerText = 'Maskierungsmodus beenden';
-    // Event-Listener für Maus-Klicks im Canvas
-    canvas.addEventListener('click', handleMaskRegion);
+function toggleMaskMode() {
+  maskMode = !maskMode;
+  if (maskMode) {
+    canvas.style.cursor = "crosshair";
   } else {
-    maskingModeButton.innerText = 'Maskierungsmodus';
-    // Event-Listener für Maus-Klicks im Canvas entfernen
-    canvas.removeEventListener('click', handleMaskRegion);
+    canvas.style.cursor = "default";
   }
 }
 
-// Markierten Bereich hinzufügen
-function handleMaskRegion(event) {
-  const x = event.offsetX;
-  const y = event.offsetY;
-  maskRegions.push({x: x, y: y});
-  // Markierung zeichnen
-  context.beginPath();
-  context.arc(x, y, 10, 0, Math.PI * 2);
-  context.strokeStyle = 'green';
-  context.stroke();
+// Temporäres Rechteck zeichnen
+function drawTempRect(rect) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  ctx.strokeStyle = "#FF0000";
+  ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
 }
 
-// Bild maskieren
-function maskImage() {
-  // Schleife über alle Pixel im Canvas
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const x = (i / 4) % canvas.width;
-    const y = Math.floor((i / 4) / canvas.width);
-    // Prüfen, ob Pixel markiert ist
-    let masked = false;
-    for (let j = 0; j < maskRegions.length; j++) {
-      const region = maskRegions[j];
-      const dx = x - region.x;
-      const dy = y - region.y;
-      if (dx * dx + dy * dy < 100) {
-        masked = true;
-        break;
-      }
-    }
-    // Pixel schwärzen, wenn nicht markiert
-    if (!masked) {
-      imageData.data[i] = 0;
-      imageData.data[i + 1] = 0;
-      imageData.data[i + 2] = 0;
-      imageData.data[i + 3] = 255;
-    }
+// Rechtecke zeichnen
+function drawRects() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  for (let i = 0; i < rects.length; i++) {
+    ctx.fillRect(rects[i].x, rects[i].y, rects[i].width, rects[i].height);
   }
-  // Maskiertes Bild in Canvas zeichnen
-  context.putImageData(imageData, 0, 0);
+}
+
+// Bild schwärzen
+function blackOut() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+  ctx.fillStyle = "black";
+  for (let i = 0; i < rects.length; i++) {
+    ctx.fillRect(rects[i].x, rects[i].y, rects[i].width, rects[i].height);
+  }
 }
