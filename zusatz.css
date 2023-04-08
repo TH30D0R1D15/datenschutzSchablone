@@ -1,7 +1,0 @@
-#document-image-container {
-    max-width: 500px; /* Maximalbreite des Containers */
-    max-height: 500px; /* Maximalhöhe des Containers */
-    overflow: auto; /* Hinzufügen von Scrollbars, falls das Bild größer als der Container ist */
-    text-align: center;
-  }
-  
