@@ -3,14 +3,38 @@
   <head>
     <meta charset="UTF-8">
     <title>Bildmaskierung</title>
+<link rel="stylesheet" href="./style.css">
+    <style>
+      #canvas {
+        border: 1px solid black;
+      }
+      #button-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+      .button {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        color: white;
+        background-color: blue;
+        cursor: pointer;
+      }
+      #download-button {
+        background-color: green;
+      }
+    </style>
   </head>
   <body>
     <input type="file" id="image-upload">
-    <br><br>
-    <button id="masking-mode">Maskierungsmodus</button>
-    <button id="mask-image">Bild maskieren</button>
-    <br><br>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <div id="button-row">
+      <button id="masking-mode" class="button">Maskierungsmodus</button>
+      <button id="mask-image" class="button">Bild maskieren</button>
+      <button id="download-button" class="button">Bild herunterladen</button>
+    </div>
+    <canvas id="canvas"></canvas>
     <script src="script.js"></script>
   </body>
 </html>
